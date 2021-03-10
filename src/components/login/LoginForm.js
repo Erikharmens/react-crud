@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -7,7 +8,7 @@ import * as yup from "yup";
 import { BASE_URL } from "../../constants/api";
 import FormError from "../common/FormError";
 // https://hidden-mountain-52913.herokuapp.com/auth/local
-const url = `${BASE_URL}/auth/local`;
+const url = `${BASE_URL}auth/local`;
 
 const schema = yup.object().shape({
   identifier: yup.string().required("Please enter your username/email"),
@@ -18,6 +19,8 @@ export default function LoginForm() {
   const [submitting, setSubmitting] = useState(false);
   const [loginError, setLoginError] = useState(null);
   const [, setAuth] = useContext(AuthContext);
+
+  const history = useHistory();
 
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
@@ -30,6 +33,7 @@ export default function LoginForm() {
       const response = await axios.post(url, data);
       //   console.log(response);
       setAuth(response.data);
+      history.push("/dashboard");
     } catch (error) {
       setLoginError(error.toString());
     }
